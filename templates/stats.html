@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="shortcut icon" href="../imgs/coins.svg">
+  <title>InvestEazy</title>
+  <!-- <script>
+    document.addEventListener('contextmenu', event => event.preventDefault());
+  </script>
+   -->
+   <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Chart JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <style>
+      body{
+        background: #f0f1f3;
+      }
+      .brand-name{
+        margin-bottom: 3vw;
+        background: #2c3853;
+        height: 60px;
+        color: white;
+      }
+      .statements{
+        margin-top: 4vw;
+        margin-bottom: 4vw;
+      }
+      .chart{
+        margin-top: 4vw;
+        width: 50%;
+      }
+      .spacer{
+        height: 4vw;
+      }
+      .section{
+      padding-top: 4vw;
+      padding-bottom: 4vw;
+    }
+    .tabs{
+      background: #2c3853;
+    }
+      .tabs .indicator{
+        background-color: #26a69a;
+      }
+      .tabs .tab a:focus, .tabs .tab a:focus.active{
+      background: transparent;
+    }
+    </style>
+</head>
+<body onload="myFunction()">
+
+  <div class="container">
+    <h3 class="center brand-name">InvestEazy</h3>
+    <div class="card">
+      <div class="card-content">
+        <div class="row">
+          <div class="col l6 s6">
+            <h4 id="compName">{{usr}}</h4>
+          <h6>BSE  <b>{{str}}</b> </h6>
+          </div>
+          
+          <div class="input-field col l4 offset-l1 s4 offset-s1">
+            <form action="#" method="POST">
+              <input id="password" type="text" name="nm" class="validate" placeholder="Search">
+              <i class="material-icons x-small prefix">search</i>
+            </form>
+          </div>
+        </div>
+    
+        <table class="bodered stripped highlight responsive-table">
+      
+          <thead>
+            <th>Ratios</th>
+            
+            <th>2010</th>
+            <th>2011</th>
+            <th>2012</th>
+            <th>2013</th>
+            <th>2014</th>
+            <th>2015</th>
+            <th>2016</th>
+            <th>2017</th>
+            <th>2018</th>
+            <th>2019</th>
+            <th>See Graph</th>
+          </thead>
+          
+          <tbody id="table"></tbody>
+        </table>
+      </div>
+    </div>
+
+      <!-- Chairman / Director Speech -->
+      <section class="section" id="services">
+            <!-- tabs title -->
+            <ul class="tabs">
+              <li class="tab col s6 l6">
+                <a href="#cs" class="active white-text text-darken-4">Chairman's Statement</a>
+              </li>
+              <li class="tab col s6 l6">
+                <a href="#ds" class="white-text text-darken-4">Director's Speech</a>
+              </li>
+              <li class="tab col s6 l6">
+                <a href="#news" class="white-text text-darken-4">News</a>
+              </li>
+            </ul>
+
+            <!-- tab content / Chairman -->
+            <div id="cs" class="col s12 l12">
+              <div class="card">
+                <div class="card-content">
+                  <p class="flow-text indigo-text text-darken-4">Chairman's Statement</p>
+                  <p class="card-flat section" id="chairman">
+                  <div class="tags"></div>
+                  </p>
+                <button class="btn" onclick="openChairman()" id="chairOpenBtn">Read More..</button>
+                <button class="btn" onclick="closeChairman()" id="chairCloseBtn">Show Less..</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- tab content / Director -->
+                <div id="ds" class="col s12 l12">
+                  <div class="card card-flat">
+                    <div class="card-content">
+                    <p class="flow-text indigo-text text-darken-4">Director's Speech</p>
+                    <p class="card-flat section" id="director">
+                      <div class="tags"></div>
+                    </p>
+                  <button class="btn" onclick="openDirector()" id="direcBtn">Read More..</button>
+                  <button class="btn" onclick="closeDirector()" id="chairCloseBtn">Show Less..</button>
+                </div>
+              </div>
+            </div>
+            <div id="news" class="col s12 l12">
+              <div class="row">
+                <!--    News Links      -->
+                <div class="col l6 m6 s12">
+                  <div class="card">
+                    <div class="card-content">
+                      <span class="flow-text indigo-text text-darken-4">News</span>
+                      <div class="collection" id="arts"></div>
+                    </div>
+                  </div>
+                </div>
+                <!--    Doughnut Chart      -->
+                <div class="col l6 m6 s12">
+                  <div class="card">
+                    <div class="card-content">
+                      <span class="flow-text indigo-text text-darken-4">Sentiment</span>
+                      <canvas id="companyImage" width="50" height="50"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+     
+              </div>
+            </div>
+                
+        </section>
+
+    <!-- Ratio Chart Modals -->
+      <div id="chart1" class="modal">
+        <div class="modal-content">
+          <canvas class="chart" id="myChart"></canvas>
+      </div>
+  </div>
+  </div>
+
+    
+  <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    
+    <script>
+
+      let compName = document.getElementById('compName');
+
+      fetch('/test')
+      .then(function (response) {
+          return response.json(); // But parse it as JSON this time
+      })
+      .then(function (json) {
+          console.log('GET response as JSON:');
+          console.log(json); // Here’s our JSON object
+      })
+
+      // JQuery
+      $(document).ready(function() {
+        $('#chart1').modal();
+        $('#chart2').modal();
+        $('#chart3').modal();
+        $('.tooltipped').tooltip();
+        $('.tabs').tabs();
+        $('.collapsible').collapsible();
+      })
+
+      // News Section
+      let newsDiv = document.getElementById('arts');
+      let newsLinks = [];
+
+      // Get News List
+      fetch('/news')
+      .then(function (response) {
+          return response.json(); // But parse it as JSON this time
+      })
+      .then(function (json) {
+          console.log('news fetched!');
+          newsLinks = json;
+          console.log(newsLinks);
+
+          newsLinks.forEach(link =>{
+          newsDiv.innerHTML += `<a href="${link.link}" target="_blank" class="collection-item truncate">${link.title}</a>`;
+          });
+
+          getDonut();
+      });
+
+//Main HTML manipulation script
+// Getting hold of the table
+let tableContent = document.querySelector('#table');
+
+// Ratios
+let ratios = [];
+
+//Get Ratios
+  fetch('/ratios')
+  .then(function (response) {
+      return response.json(); // But parse it as JSON this time
+  })
+  .then(function (json) {
+      console.log('GET response as JSON:');
+      console.log(json); // Here’s our JSON object
+      ratios = json;
+      let i = 0;
+      ratios.forEach(ratio =>{
+
+        tableContent.innerHTML += `
+          <tr>
+          <td>${ratio.name}</td>
+          
+          <td>${ratio.data[0]}</td>
+          <td>${ratio.data[1]}</td>
+          <td>${ratio.data[2]}</td>
+          <td>${ratio.data[3]}</td>
+          <td>${ratio.data[4]}</td>
+          <td>${ratio.data[5]}</td>
+          <td>${ratio.data[6]}</td>
+          <td>${ratio.data[7]}</td>
+          <td>${ratio.data[8]}</td>
+          <td>${ratio.data[9]}</td>
+          <td>
+            <a href="#chart1" onclick="canvasClick(${i})" class="btn-floating tooltipped modal-trigger" data-position="right" data-tooltip="Click to see graph">
+            <i class="material-icons small">equalizer</i>
+            </a>
+          </td>
+`;
+    i++;
+});
+})
+
+// Charts
+let canvas = document.getElementById('myChart').getContext('2d');
+canvasClick = (i) =>{
+  console.log(ratios[i].name);
+
+  let chart1 = new Chart(canvas, {
+    // The type of chart we want to create
+    type: 'line',
+
+    // The data for our dataset
+    data: {
+        labels: [2010,2011,2012,2013,2014,2015,2016,2017,2018,2019],
+        datasets: [{
+            lineTension: 0,
+            fill: false,
+            backgroundColor: '',
+            borderColor: 'rgb(255, 99, 132)',
+            data:ratios[i].data
+        }]
+    },
+
+    // Configuration options go here
+    options: {
+      title:{
+        display: true,
+        text: ratios[i].name,
+        fontSize: 17
+      },
+      legend:{
+              display: false
+      }
+    }
+});
+}
+
+// Speeches
+let speech = []
+
+// Chairman & Director
+let chairman = document.getElementById("chairman");
+let director = document.getElementById("director");
+let tags = document.getElementsByClassName("tags");
+
+//Get Speeches
+fetch('/speeches')
+  .then(function (response) {
+      return response.json(); // But parse it as JSON this time
+  })
+  .then(function (json) {
+      console.log('GET response as JSON:');
+      console.log(json); // Here’s our JSON object
+      speech = json;
+
+      //Filling Up Page
+      chairman.innerText = `${speech[0].summary}`;
+      director.innerText = `${speech[1].summary}`;
+
+      //Adding Keywords
+      for(let i=0; i<=1; i++){
+        speech[i].keywords.forEach(keyword =>{
+          tags[i].innerHTML += `<div class="chip">${keyword}</div>`;
+        })
+      }
+      
+      // ReadMore Button Controls
+      openChairman = () => {
+        chairman.innerText = `${speech[0].fullCont}`;
+      };
+      openDirector = () => {
+        director.innerHTML = `${speech[1].fullCont}`;
+      };
+
+      closeChairman = () =>{
+        chairman.innerText = `${speech[0].summary}`;
+      }
+
+      closeDirector = () =>{
+        director.innerText = `${speech[1].summary}`;
+      }
+  });
+
+//Get Doughnut Data
+let donut = [100]
+let mean = '';
+
+function getDonut() {
+  fetch('/doughnut')
+  .then(function (response) {
+      return response.json(); // But parse it as JSON this time
+  })
+  .then(function (json) {
+      
+      mean = json;
+
+      if(mean == 'positive'){
+        name = 'Positive';
+        color = '#36a2eb';
+        
+      }
+      else if(mean == 'negative'){
+        name = 'Negative';
+        color = '#f44336';
+        
+      }
+      else{
+        name = 'Neutral';
+        color = '#ffcd56';
+        
+      }
+    
+    // Doughnut Chart
+    var companyImage = document.getElementById('companyImage').getContext('2d');
+    var myChart = new Chart(companyImage, {
+      type: 'doughnut',
+      data: {
+          labels: [`${name}`],
+          datasets: [{
+              
+              data: donut,
+            
+              backgroundColor: [
+                  `${color}`,
+                  ,
+              ],
+            
+              borderColor: [
+                  `${color}`,
+                  ,
+                    '#d8d8da'],
+              borderWidth: 1
+          }]
+      },
+      options: {
+        animation:{
+          animateScale: true
+        }
+      }
+    });
+  })
+}
+    </script>
+
+  <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>
