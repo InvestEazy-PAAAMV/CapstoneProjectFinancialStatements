@@ -1,4 +1,4 @@
-# CapstoneProjectFinancialStatements
+# Extraction of Financial Ratios and Analysis using Web Scraping and Text Analytics
 
 Clone it from the GitHub repository.
 
